@@ -1,0 +1,22 @@
+name: "Feature Test - Robot"
+description: "Create an unmanaged, namespaced scratch org and run Robot Framework tests"
+inputs:
+  dev-hub-auth-url:
+    type: string
+    required: True
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+    - name: Run CumulusCI Flow
+      uses: cumulusci-actions/execute-cumulusci-flow@main
+      with:
+        dev-hub-auth-url: ${{ inputs.dev-hub-auth-url }}
+        org-name: feature
+        flow-name: ci_feature_robot
+    - name: Store Robot Artifacts
+      uses: actions/upload-artifact@v3
+      if: ${{ always() }}
+      with:
+        name: robot-results
+        path: robot/**/results
