@@ -1,5 +1,5 @@
 name: "Feature Test - Robot"
-description: "Create an unmanaged, namespaced scratch org and run Robot Framework tests"
+description: "Create an unmanaged scratch org and run Robot Framework tests"
 inputs:
   dev-hub-auth-url:
     type: string
@@ -8,12 +8,30 @@ runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v2
-    - name: Run CumulusCI Flow
-      uses: cumulusci-actions/execute-cumulusci-flow@main
+    - name: Set Up CumulusCI
+      uses: cumulusci-actions/setup-cumulus@main
+    - name: Authenticate to Dev Hub
+      run: |
+        echo '${{ inputs.dev-hub-auth-url }}' > sfdx_auth
+        sfdx force:auth:sfdxurl:store -f sfdx_auth -d
+        rm sfdx_auth
+      shell: bash
+    - name: Run Flow
+      uses: cumulusci-actions/run-flow@main
       with:
-        dev-hub-auth-url: ${{ inputs.dev-hub-auth-url }}
-        org-name: feature
-        flow-name: ci_feature_robot
+        org-name: qa
+        flow-name: qa_org
+    - name: Run Task
+      uses: cumulusci-actions/run-task@main
+      with:
+        org-name: qa
+        task-name: robot
+        options: "-o vars 'BROWSER:headlesschrome,CHROME_BINARY:/app/.apt/usr/bin/google-chrome-stable,TIMEOUT:180.0' -o exclude unstable -o outputdir ."
+    - name: Delete Scratch Org
+      if: ${{ always() }}
+      run: |
+        cci org scratch_delete qa
+      shell: bash
     - name: Store Robot Artifacts
       uses: actions/upload-artifact@v3
       if: ${{ always() }}
