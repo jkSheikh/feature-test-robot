@@ -26,7 +26,7 @@ runs:
       with:
         org-name: qa
         task-name: robot
-        options: "-o vars 'BROWSER:headlesschrome,CHROME_BINARY:/app/.apt/usr/bin/google-chrome-stable,TIMEOUT:180.0' -o exclude unstable -o options outputdir:."
+        options: "-o vars 'BROWSER:headlesschrome,TIMEOUT:180.0' -o exclude unstable -o options outputdir:."
     - name: Delete Scratch Org
       if: ${{ always() }}
       run: |
