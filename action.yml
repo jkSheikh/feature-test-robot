@@ -17,7 +17,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: jkSheikh/run-robot-flow-scratch@v1
+    - uses: jkSheikh/run-robot-flow-scratch@main
       with:
         dev-hub-auth-url: "${{ inputs.dev-hub-auth-url }}"
         org-name: "${{ inputs.org-name }}"
